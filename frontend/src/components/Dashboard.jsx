@@ -12,12 +12,12 @@ const Dashboard = () => {
   });
   const [isEditing, setIsEditing] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "" });
+  const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch patient profile on component mount
     const fetchProfile = async () => {
       try {
         const token = localStorage.getItem("access_token");
@@ -30,7 +30,6 @@ const Dashboard = () => {
         setProfile(response.data);
       } catch (error) {
         console.error("Failed to fetch profile", error);
-        // Logout user if token is invalid
         dispatch(logout());
         navigate("/login");
       }
@@ -47,6 +46,10 @@ const Dashboard = () => {
   };
 
   const handleLogout = () => {
+    setIsLogoutDialogOpen(true);
+  };
+
+  const confirmLogout = () => {
     dispatch(logout());
     navigate("/login");
   };
@@ -65,7 +68,6 @@ const Dashboard = () => {
       setMessage({ text: "Profile updated successfully!", type: "success" });
       setIsEditing(false);
 
-      // Clear message after 3 seconds
       setTimeout(() => {
         setMessage({ text: "", type: "" });
       }, 3000);
@@ -161,6 +163,29 @@ const Dashboard = () => {
             </button>
           </div>
         </form>
+      )}
+
+      {isLogoutDialogOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-lg shadow-xl max-w-sm w-full mx-4">
+            <h3 className="text-lg font-medium mb-4">Confirm Logout</h3>
+            <p className="mb-4">Are you sure you want to logout?</p>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={() => setIsLogoutDialogOpen(false)}
+                className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmLogout}
+                className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
