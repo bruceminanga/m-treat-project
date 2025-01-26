@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { loginUser } from "../redux/authSlice";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Login = () => {
   const [credentials, setCredentials] = useState({
@@ -25,7 +26,6 @@ const Login = () => {
     try {
       await dispatch(loginUser(credentials)).unwrap();
       setMessage({ text: "Login successful! Redirecting...", type: "success" });
-      // Delay navigation to show the success message
       setTimeout(() => {
         navigate("/dashboard");
       }, 1500);
@@ -56,30 +56,41 @@ const Login = () => {
         onSubmit={handleSubmit}
         className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"
       >
-        <input
-          type="text"
-          name="username"
-          placeholder="Username"
-          value={credentials.username}
-          onChange={handleChange}
-          required
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3"
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          value={credentials.password}
-          onChange={handleChange}
-          required
-          className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3"
-        />
-        <button
-          type="submit"
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Login
-        </button>
+        <div className="mb-6">
+          <input
+            type="text"
+            name="username"
+            placeholder="Username"
+            value={credentials.username}
+            onChange={handleChange}
+            required
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3"
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            value={credentials.password}
+            onChange={handleChange}
+            required
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3"
+          />
+          <button
+            type="submit"
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded w-full"
+          >
+            Login
+          </button>
+        </div>
+        <div className="text-center">
+          <p className="text-gray-600">Don't have an account?</p>
+          <Link
+            to="/register"
+            className="text-blue-500 hover:text-blue-700 font-medium"
+          >
+            Register here
+          </Link>
+        </div>
       </form>
     </div>
   );
