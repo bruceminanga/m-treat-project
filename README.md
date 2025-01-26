@@ -11,8 +11,8 @@
 1. Create virtual environment
 
 ```bash
-python3 -m venv backend_venv
-source backend_venv/bin/activate
+python3 -m venv venv
+source venv/bin/activate
 ```
 
 2. Install dependencies
