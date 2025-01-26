@@ -125,28 +125,58 @@ const Dashboard = () => {
         </div>
       ) : (
         <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            name="username"
-            value={profile.username}
-            onChange={handleChange}
-            disabled
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3"
-          />
-          <input
-            type="email"
-            name="email"
-            value={profile.email}
-            disabled
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3"
-          />
-          <input
-            type="tel"
-            name="phone"
-            value={profile.phone}
-            onChange={handleChange}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3"
-          />
+          <div className="mb-4">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="username"
+            >
+              Username
+            </label>
+            <input
+              id="username"
+              type="text"
+              name="username"
+              value={profile.username}
+              onChange={handleChange}
+              disabled
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 bg-gray-100"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="email"
+            >
+              Email
+            </label>
+            <input
+              id="email"
+              type="email"
+              name="email"
+              value={profile.email}
+              disabled
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 bg-gray-100"
+            />
+          </div>
+
+          <div className="mb-4">
+            <label
+              className="block text-gray-700 text-sm font-bold mb-2"
+              htmlFor="phone"
+            >
+              Phone
+            </label>
+            <input
+              id="phone"
+              type="tel"
+              name="phone"
+              value={profile.phone}
+              onChange={handleChange}
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700"
+            />
+          </div>
+
           <div className="flex justify-between">
             <button
               type="submit"
