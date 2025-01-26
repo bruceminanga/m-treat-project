@@ -40,6 +40,12 @@ const Login = () => {
 
   return (
     <div className="max-w-md mx-auto mt-10">
+      <header className="text-center mb-6">
+        <h1 className="text-3xl font-bold text-gray-800">M-treat system</h1>
+        <p className="text-gray-600">
+          Your trusted partner in treatment management
+        </p>
+      </header>
       {message.text && (
         <div
           className={`mb-4 p-4 rounded ${
