@@ -4,6 +4,15 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from .serializers import PatientRegistrationSerializer, PatientProfileSerializer
 
+# from django.views.generic import TemplateView
+
+
+# class ReactAppView(TemplateView):
+#     template_name = "index.html"
+
+#     def get(self, request, *args, **kwargs):
+#         return super().get(request, *args, **kwargs)
+
 
 @api_view(["PUT"])
 @permission_classes([IsAuthenticated])

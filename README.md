@@ -47,12 +47,6 @@ cd frontend
 npm install
 ```
 
-2. Start Development Server
-
-```bash
-npm run dev
-```
-
 ## Project Structure
 
 - `backend/`: Django REST framework backend
