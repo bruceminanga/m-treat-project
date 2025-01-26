@@ -50,7 +50,7 @@ npm install
 2. Start Development Server
 
 ```bash
-npm start
+npm run dev
 ```
 
 ## Project Structure
