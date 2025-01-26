@@ -1,8 +1,27 @@
-from rest_framework import status
+from rest_framework import status, generics
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from .serializers import PatientRegistrationSerializer
+from .serializers import PatientRegistrationSerializer, UserProfileSerializer
+
+
+@api_view(["PUT"])
+@permission_classes([IsAuthenticated])
+def update_patient_profile(request):
+    """
+    Update patient's profile data
+    """
+    patient = request.user
+    serializer = PatientProfileSerializer(patient, data=request.data, partial=True)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(
+            {"message": "Profile updated successfully", "data": serializer.data},
+            status=status.HTTP_200_OK,
+        )
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["POST"])

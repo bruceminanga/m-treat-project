@@ -8,6 +8,7 @@ const Login = () => {
     username: "",
     password: "",
   });
+  const [message, setMessage] = useState({ text: "", type: "" });
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -22,19 +23,35 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Dispatch login action
       await dispatch(loginUser(credentials)).unwrap();
-      // Redirect to dashboard on successful login
-      navigate("/dashboard");
+      setMessage({ text: "Login successful! Redirecting...", type: "success" });
+      // Delay navigation to show the success message
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1500);
     } catch (error) {
-      // Handle login errors
       console.error("Login failed", error);
-      alert("Login failed. Please check your credentials.");
+      setMessage({
+        text: "Login failed. Please check your credentials.",
+        type: "error",
+      });
     }
   };
 
   return (
     <div className="max-w-md mx-auto mt-10">
+      {message.text && (
+        <div
+          className={`mb-4 p-4 rounded ${
+            message.type === "success"
+              ? "bg-green-100 text-green-700 border border-green-400"
+              : "bg-red-100 text-red-700 border border-red-400"
+          }`}
+          role="alert"
+        >
+          {message.text}
+        </div>
+      )}
       <form
         onSubmit={handleSubmit}
         className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"

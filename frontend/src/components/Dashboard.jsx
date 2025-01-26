@@ -11,6 +11,7 @@ const Dashboard = () => {
     phone: "",
   });
   const [isEditing, setIsEditing] = useState(false);
+  const [message, setMessage] = useState({ text: "", type: "" });
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -53,16 +54,47 @@ const Dashboard = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // TODO: Implement profile update API call
+      const token = localStorage.getItem("access_token");
+      await axios.put(
+        "http://localhost:8000/api/accounts/profile/update/",
+        profile,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      setMessage({ text: "Profile updated successfully!", type: "success" });
       setIsEditing(false);
+
+      // Clear message after 3 seconds
+      setTimeout(() => {
+        setMessage({ text: "", type: "" });
+      }, 3000);
     } catch (error) {
       console.error("Profile update failed", error);
+      setMessage({
+        text: error.response?.data?.message || "Failed to update profile",
+        type: "error",
+      });
     }
   };
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white shadow-md rounded">
       <h2 className="text-2xl mb-4">Patient Dashboard</h2>
+
+      {message.text && (
+        <div
+          className={`mb-4 p-4 rounded ${
+            message.type === "success"
+              ? "bg-green-100 text-green-700 border border-green-400"
+              : "bg-red-100 text-red-700 border border-red-400"
+          }`}
+          role="alert"
+        >
+          {message.text}
+        </div>
+      )}
+
       {!isEditing ? (
         <div>
           <p>
