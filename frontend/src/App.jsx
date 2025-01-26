@@ -10,6 +10,7 @@ import { store } from "./redux/store";
 import Register from "./components/Register";
 import Login from "./components/Login";
 import Dashboard from "./components/Dashboard";
+import Layout from "./components/Layout";
 
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
@@ -21,20 +22,22 @@ function App() {
   return (
     <Provider store={store}>
       <Router>
-        <Routes>
-          <Route path="/register" element={<Register />} />
-          <Route path="/login" element={<Login />} />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            }
-          />
-          {/* Redirect to login by default */}
-          <Route path="/" element={<Navigate to="/login" replace />} />
-        </Routes>
+        <Layout>
+          <Routes>
+            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={<Login />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              }
+            />
+            {/* Redirect to login by default */}
+            <Route path="/" element={<Navigate to="/login" replace />} />
+          </Routes>
+        </Layout>
       </Router>
     </Provider>
   );
