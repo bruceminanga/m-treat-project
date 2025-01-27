@@ -138,8 +138,7 @@ const Dashboard = () => {
               name="username"
               value={profile.username}
               onChange={handleChange}
-              disabled
-              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 bg-gray-100"
+              className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 

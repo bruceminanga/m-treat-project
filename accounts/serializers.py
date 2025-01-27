@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from .models import Patient
-
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -8,9 +7,12 @@ User = get_user_model()
 
 class PatientProfileSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
+        model = Patient
         fields = ["username", "email", "phone"]
-        read_only_fields = ["username", "email"]  # These fields cannot be modified
+        extra_kwargs = {
+            "username": {"required": False},
+            "email": {"read_only": True},
+        }
 
 
 class PatientRegistrationSerializer(serializers.ModelSerializer):
