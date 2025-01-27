@@ -8,7 +8,7 @@
 
 ## Backend Setup
 
-1. Create virtual environment
+1. Create virtual environment in your root directory
 
 ```bash
 python3 -m venv venv
