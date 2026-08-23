@@ -1,0 +1,47 @@
+services:
+
+  db:
+    image: postgres:16-alpine
+    container_name: mtreatproject-db
+    environment:
+      POSTGRES_DB: mtreat_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgrespassword
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile.dev
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app:z
+    environment:
+      - DB_HOST=db # <-- Points to the 'db' service name!
+      - DB_NAME=mtreat_db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgrespassword
+      - DB_PORT=5432
+    depends_on:
+      - db
+
+  frontend:
+    # Equivalent: docker run -it --rm -p 5173:5173 -v "$(pwd)":/app:z -v /app/node_modules --name mtreatproject-frontend mtreatproject:sha-a123 npm run dev -- --host 0.0.0.0
+
+    #  Let compose build it for you automatically
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app:z # <-- Mount the specific frontend folder
+      - /app/node_modules
+
+volumes:
+  postgres_data:

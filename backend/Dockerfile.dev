@@ -1,0 +1,40 @@
+# =============================================================================
+# DEVELOPMENT DOCKERFILE
+# =============================================================================
+ARG PYTHON_VERSION=3.12-slim
+FROM python:${PYTHON_VERSION}
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+WORKDIR /app
+
+# 1. Install netcat (needed for entrypoint database health check)
+RUN apt-get update && apt-get install -y --no-install-recommends netcat-openbsd && rm -rf /var/lib/apt/lists/*
+
+# 2. Create non-root user
+RUN useradd -m -u 1000 devuser
+
+# 3. Copy and Install Python dependencies (with cache mount)
+COPY requirements*.txt ./
+RUN --mount=type=cache,target=/root/.cache/pip <<EOF
+pip install --upgrade pip
+pip install -r requirements.txt
+if [ -f requirements-dev.txt ]; then
+    pip install -r requirements-dev.txt
+fi
+EOF
+
+# 4. Copy codebase and set permissions for devuser
+COPY --chown=devuser:devuser . /app
+
+# 5. Copy entrypoint script and make it executable (while still root)
+COPY --chmod=755 backend/entrypoint.sh /entrypoint.sh
+
+# 6. NOW switch to non-root user
+USER devuser
+
+EXPOSE 8000
+
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

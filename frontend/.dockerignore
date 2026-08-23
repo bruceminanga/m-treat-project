@@ -1,0 +1,38 @@
+# Git & CI/CD
+.git
+.gitignore
+.github/
+
+# Local dependencies & caches
+node_modules/
+.cache/
+.vite/
+.eslintcache
+
+# Logs & Store
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Secrets & Local Configs
+.env
+.env.*
+*.pem
+*.key
+
+# Local build artifacts & test outputs
+build/
+dist/
+coverage/
+
+# OS & Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Docker files
+Dockerfile*
+docker-compose*
+.dockerignore

@@ -25,8 +25,18 @@ export default defineConfig({
     }
   },
   server: {
+    host: '0.0.0.0',      // 1. Allows Docker port forwarding to reach Vite
+    port: 5173,
+    strictPort: true,
+    watch: {
+      usePolling: true,   // 2. Ensures Hot Reload (HMR) triggers across Docker file mounts
+    },
     proxy: {
-      '/api': 'http://localhost:8000',
+      '/api': {
+        // ⚠️ See explanation below for Docker proxy targets
+        target: process.env.VITE_BACKEND_URL || 'http://localhost:8000',
+        changeOrigin: true,
+      },
     }
   }
 })
