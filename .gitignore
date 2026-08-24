@@ -33,3 +33,31 @@ env/
 *.njsproj
 *.sln
 *.sw?
+
+# ==========================================
+# Terraform Core Ignored Files & Directories
+# ==========================================
+
+# Terraform local execution files
+.terraform/
+.terraform.lock.hcl
+
+# State files (should never be committed when using S3 backend)
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+
+# Sensitive variables
+*.tfvars
+*.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Ignore Terraform plan files
+*.tfplan
+
+# Ignore CLI configuration and crash logs
+crash.log
+crash.*.log
