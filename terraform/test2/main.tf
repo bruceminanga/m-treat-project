@@ -96,7 +96,7 @@ resource "aws_route_table_association" "public_assoc" {
 # 1. The Main Bucket
 resource "aws_s3_bucket" "app_media" {
   # Use a unique name (or bucket_prefix) for real AWS
-  bucket = "my-company-prod-django-media-uploads-bucket-test"
+  bucket = "my-company-${terraform.workspace}-django-media-bucket"
 
   tags = {
     Name        = "django-media-storage"
@@ -216,7 +216,7 @@ resource "aws_vpc_security_group_egress_rule" "allow_all_outbound" {
 
 # 1. IAM Role allowing EC2 to talk to your Step 2 S3 Media Bucket
 resource "aws_iam_role" "app_server_role" {
-  name = "django-server-s3-access-role-test"
+  name = "django-server-${terraform.workspace}-s3-access-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -253,7 +253,7 @@ resource "aws_iam_role_policy" "s3_access_policy" {
 
 # 3. Instance Profile (The bridge attaching the IAM Role to the EC2 Instance)
 resource "aws_iam_instance_profile" "app_server_profile" {
-  name = "django-server-instance-profile-test2"
+  name = "django-server-${terraform.workspace}-instance-profile-test2"
   role = aws_iam_role.app_server_role.name
 }
 
