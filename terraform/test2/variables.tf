@@ -3,3 +3,16 @@ variable "instance_ami" {
   type        = string
   default     = "ami-12345678" # LocalStack accepts any dummy string
 }
+
+variable "environment" {
+  description = "Deployment environment name (e.g., dev, staging, prod)"
+  type        = string
+  default     = "dev"
+}
+
+variable "instance_type" {
+  description = "EC2 instance size"
+  type        = string
+  default     = "t3.micro"
+}
+
