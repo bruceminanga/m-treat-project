@@ -100,7 +100,7 @@ resource "aws_s3_bucket" "app_media" {
 
   tags = {
     Name        = "django-media-storage"
-    Environment = "dev"
+    Environment = var.environment
   }
 }
 
@@ -259,14 +259,14 @@ resource "aws_iam_instance_profile" "app_server_profile" {
 
 # 4. The Production EC2 Instance
 resource "aws_instance" "app_server" {
-  ami                  = var.instance_ami # <--- Uses the variable!
-  instance_type        = "t3.micro"
+  ami                  = var.instance_ami
+  instance_type        = var.instance_type
   subnet_id            = aws_subnet.custom_public_subnet.id
   iam_instance_profile = aws_iam_instance_profile.app_server_profile.name
 
   vpc_security_group_ids = [aws_security_group.app_firewall.id]
 
- # ----------------------------------------------------------------------------
+  # ----------------------------------------------------------------------------
   # PRODUCTION DISK CONFIGURATION:
   # (Uncomment when deploying to real AWS with a real Ubuntu AMI)
   # ----------------------------------------------------------------------------
