@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  name: frontend-quota
+  namespace: frontend-prod
+spec:
+  hard:
+    requests.cpu: "400m"       # Total reserved CPU for all frontend pods
+    requests.memory: "350Mi"   # Max reserved RAM across the namespace
+    limits.cpu: "800m"         # Max peak CPU burst
+    limits.memory: "500Mi"     # Max peak RAM burst
+    pods: "4"                  # Max 4 frontend pods (e.g. if HPA scales up)

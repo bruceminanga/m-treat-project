@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+  namespace: frontend-prod
+data:
+  AWS_ENDPOINT_URL: "http://192.168.122.1:4566"
+  AWS_REGION: "us-east-1"
+  S3_BUCKET_NAME: "my-learning-bucket"
+
+

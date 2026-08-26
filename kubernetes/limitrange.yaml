@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: LimitRange
+metadata:
+  name: frontend-limit-range
+  namespace: frontend-prod
+spec:
+  limits:
+  - type: Container
+    # 1. Defaults injected if a container omits them:
+    defaultRequest:
+      cpu: "50m"
+      memory: "64Mi"
+    default:
+      cpu: "150m"
+      memory: "128Mi"
+
+    # 2. Hard guardrails for a single container:
+    max:
+      cpu: "300m"        # No single container can take more than 300m CPU
+      memory: "256Mi"    # No single container can take more than 256Mi RAM
+    min:
+      cpu: "20m"
+      memory: "32Mi"
