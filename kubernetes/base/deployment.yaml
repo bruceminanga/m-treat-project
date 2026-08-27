@@ -17,6 +17,7 @@ spec:
       containers:
         - name: frontend
           image: everyday-is-devops-day-frontend:sha-a123
+          imagePullPolicy: IfNotPresent
 
           resources:
             requests:

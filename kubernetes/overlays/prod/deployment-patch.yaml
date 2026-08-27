@@ -2,20 +2,39 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: prod-frontend-deployment
+  namespace: frontend-prod
 spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: frontend
   template:
+    metadata:
+      labels:
+        app: frontend
     spec:
+      # --- 1. Pod-level security context ---
       securityContext:
         runAsNonRoot: true
+        runAsUser: 10001 # Any non-0 (non-root) UID
+        runAsGroup: 10001
         seccompProfile:
           type: RuntimeDefault
       containers:
         - name: frontend
           image: everyday-is-devops-day-frontend:sha-a123
-          # 👈 ADD THIS SECURITY CONTEXT BLOCK:
+          imagePullPolicy: IfNotPresent
+          # --- 2. Container-level security context ---
           securityContext:
             allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false # set to true if your app doesn't need to write to disk
             capabilities:
               drop:
                 - ALL
-          # ... keep existing ports, resources, envFrom, probes ...
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
