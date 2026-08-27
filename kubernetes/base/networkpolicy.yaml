@@ -2,7 +2,6 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: default-deny-all
-  namespace: frontend-prod
 spec:
   podSelector: {}
   policyTypes:
@@ -14,7 +13,6 @@ apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
   name: allow-frontend-traffic
-  namespace: frontend-prod
 spec:
   podSelector:
     matchLabels:
