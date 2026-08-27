@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: my-app-environments
+  namespace: argocd
+spec:
+  generators:
+    - list:
+        elements:
+          - env: dev
+            cluster: https://kubernetes.default.svc
+          - env: staging
+            cluster: https://kubernetes.default.svc
+          - env: prod
+            cluster: https://kubernetes.default.svc
+  template:
+    metadata:
+      name: "my-app-{{env}}"
+    spec:
+      project: default
+      source:
+        repoURL: "https://github.com/bruceminanga/m-treat-project.git"
+        targetRevision: HEAD
+        path: "overlays/{{env}}"
+      destination:
+        server: "{{cluster}}"
+        namespace: "{{env}}"
+      syncPolicy:
+        automated:
+          prune: true # Removes resources deleted from Git
+          selfHeal: true # Reverts manual 'kubectl' drift
+        syncOptions:
+          - CreateNamespace=true
