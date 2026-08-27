@@ -14,11 +14,6 @@ spec:
       labels:
         app: frontend
     spec:
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 10001
-        seccompProfile:
-          type: RuntimeDefault
       containers:
         - name: frontend
           image: everyday-is-devops-day-frontend:sha-a123

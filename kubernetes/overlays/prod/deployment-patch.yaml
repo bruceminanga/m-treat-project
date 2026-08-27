@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prod-frontend-deployment
+spec:
+  template:
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: frontend
+          image: everyday-is-devops-day-frontend:sha-a123
+          # 👈 ADD THIS SECURITY CONTEXT BLOCK:
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          # ... keep existing ports, resources, envFrom, probes ...

@@ -24,7 +24,7 @@ spec:
         path: "kubernetes/overlays/{{env}}" # 👈 MUST have "kubernetes/" in the path
       destination:
         server: "{{cluster}}"
-        namespace: "{{env}}"
+        namespace: "frontend-{{env}}"
       syncPolicy:
         automated:
           prune: true
