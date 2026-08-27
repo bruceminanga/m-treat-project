@@ -4,4 +4,5 @@ metadata:
   name: frontend-prod
   labels:
     environment: production
-    pod-security.kubernetes.io/enforce: privileged
+    # pod-security.kubernetes.io/enforce: privileged
+    pod-security.kubernetes.io/enforce: restricted
