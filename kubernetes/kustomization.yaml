@@ -3,14 +3,25 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
+  # Namespace & Governance:
   - namespace.yaml
   - resourcequota.yaml
   - limitrange.yaml
+
+  # Config & Secrets:
   - configmap.yaml
   - secret.yaml
+
+  # Core Workload:
   - deployment.yaml
+
+  # Traffic & Ingress:
   - service.yaml
   - ingress.yaml
+
+  # Autoscaling & Resilience:
   - hpa.yaml
   - pdb.yaml
+
+  # Security & Firewall:
   - networkpolicy.yaml
