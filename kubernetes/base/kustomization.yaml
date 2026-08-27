@@ -16,7 +16,6 @@ resources:
 
   # Traffic & Ingress:
   - service.yaml
-  - ingress.yaml
 
   # Core Workload:
   - deployment.yaml

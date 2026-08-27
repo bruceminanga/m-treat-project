@@ -20,14 +20,14 @@ spec:
       project: default
       source:
         repoURL: "https://github.com/bruceminanga/m-treat-project.git"
-        targetRevision: HEAD
-        path: "overlays/{{env}}"
+        targetRevision: main
+        path: "kubernetes/overlays/{{env}}" # 👈 MUST have "kubernetes/" in the path
       destination:
         server: "{{cluster}}"
         namespace: "{{env}}"
       syncPolicy:
         automated:
-          prune: true # Removes resources deleted from Git
-          selfHeal: true # Reverts manual 'kubectl' drift
+          prune: true
+          selfHeal: true
         syncOptions:
           - CreateNamespace=true

@@ -9,6 +9,4 @@ resources:
   - namespace.yaml
 
 patches:
-  - path: ingress-patch.yaml
-  - path: hpa-patch.yaml
   - path: replicas-patch.yaml
