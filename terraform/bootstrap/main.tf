@@ -16,6 +16,7 @@ provider "aws" {
   region = "us-east-1"
 }
 
+# In modern Terraform, configuring an S3 bucket requires companion resources:
 # 1. State Bucket
 resource "aws_s3_bucket" "terraform_state" {
   bucket = "my-company-prod-terraform-state-bucket-test2"
