@@ -1,50 +1,65 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend-deployment
   labels:
     app: frontend
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/name: my-app
+  name: frontend-deployment
 spec:
   replicas: 2
+  minReadySeconds: 5 # Ensures the new pod stays ready for 5s before old pods are torn down
   selector:
     matchLabels:
       app: frontend
+      app.kubernetes.io/managed-by: kustomize
+      app.kubernetes.io/name: my-app
   template:
     metadata:
       labels:
         app: frontend
+        app.kubernetes.io/managed-by: kustomize
+        app.kubernetes.io/name: my-app
     spec:
       containers:
-        - name: frontend
-          image: everyday-is-devops-day-frontend:sha-a123
-          imagePullPolicy: IfNotPresent
-
-          resources:
-            requests:
-              cpu: "100m"
-              memory: "128Mi"
-            limits:
-              cpu: "200m"
-              memory: "128Mi"
-
-          livenessProbe:
-            httpGet:
-              path: /
-              port: 8080
-            periodSeconds: 10
-            timeoutSeconds: 2
-            failureThreshold: 3
-
-          readinessProbe:
-            httpGet:
-              path: /
-              port: 8080
-            periodSeconds: 5
-            timeoutSeconds: 2
-            failureThreshold: 2
-
-          envFrom:
+        - envFrom:
             - configMapRef:
                 name: frontend-config
             - secretRef:
                 name: frontend-secrets
+          image: everyday-is-devops-day-frontend:sha-a123
+          imagePullPolicy: IfNotPresent
+
+          # 1. Graceful Termination Hook
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "sleep 5"]
+
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 2
+
+          # 2. Tuned Readiness Probe
+          readinessProbe:
+            failureThreshold: 2
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 3 # Delay initial check until app starts up
+            periodSeconds: 5
+            timeoutSeconds: 2
+            successThreshold: 1
+
+          resources:
+            limits:
+              cpu: 200m
+              memory: 128Mi
+            requests:
+              cpu: 100m
+              memory: 128Mi
