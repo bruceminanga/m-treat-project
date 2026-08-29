@@ -9,10 +9,10 @@ spec:
         elements:
           - env: dev
             cluster: https://kubernetes.default.svc
-          # - env: staging
-          #   cluster: https://kubernetes.default.svc
-          # - env: prod
-          #   cluster: https://kubernetes.default.svc
+          - env: staging
+            cluster: https://kubernetes.default.svc
+          - env: prod
+            cluster: https://kubernetes.default.svc
   template:
     metadata:
       name: "my-app-{{env}}"
