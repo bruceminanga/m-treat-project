@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: prod-frontend-deployment
+  name: frontend-deployment
   namespace: frontend-prod
 spec:
   replicas: 3
