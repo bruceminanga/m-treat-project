@@ -8,7 +8,7 @@ metadata:
   name: frontend-deployment
 spec:
   replicas: 2
-  minReadySeconds: 5 # Ensures the new pod stays ready for 5s before old pods are torn down
+  minReadySeconds: 5
   selector:
     matchLabels:
       app: frontend
@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
         - name: frontend
-        - envFrom:
+          envFrom:
             - configMapRef:
                 name: frontend-config
             - secretRef:
@@ -52,7 +52,7 @@ spec:
             httpGet:
               path: /
               port: 8080
-            initialDelaySeconds: 3 # Delay initial check until app starts up
+            initialDelaySeconds: 3
             periodSeconds: 5
             timeoutSeconds: 2
             successThreshold: 1

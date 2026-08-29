@@ -1,40 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend-deployment
-  namespace: frontend-prod
+  name: frontend-deployment # No namespace here — Kustomization sets it
 spec:
-  replicas: 3
-  selector:
-    matchLabels:
-      app: frontend
+  replicas: 2
   template:
-    metadata:
-      labels:
-        app: frontend
     spec:
       # --- 1. Pod-level security context ---
       securityContext:
         runAsNonRoot: true
-        runAsUser: 10001 # Any non-0 (non-root) UID
+        runAsUser: 10001
         runAsGroup: 10001
         seccompProfile:
           type: RuntimeDefault
       containers:
         - name: frontend
-          image: everyday-is-devops-day-frontend:sha-a123
-          imagePullPolicy: IfNotPresent
           # --- 2. Container-level security context ---
           securityContext:
             allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: false # set to true if your app doesn't need to write to disk
+            readOnlyRootFilesystem: false
             capabilities:
               drop:
                 - ALL
           resources:
             requests:
-              cpu: "100m"
-              memory: "128Mi"
+              cpu: 100m
+              memory: 128Mi
             limits:
-              cpu: "500m"
-              memory: "256Mi"
+              cpu: 300m # Fits inside LimitRange max (300m)
+              memory: 256Mi # Fits inside ResourceQuota (2 * 256Mi = 512Mi / 500Mi, or adjust to 200Mi)

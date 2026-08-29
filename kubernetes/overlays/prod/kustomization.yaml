@@ -10,3 +10,4 @@ resources:
 
 patches:
   - path: replicas-patch.yaml
+  - path: deployment-patch.yaml
