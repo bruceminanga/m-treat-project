@@ -24,6 +24,10 @@ resources:
   - hpa.yaml
   - pdb.yaml
 
+  # observability stack
+  - prometheusrule.yaml
+  - servicemonitor.yaml
+
 # Common metadata applied to all resources in base
 commonLabels:
   app.kubernetes.io/name: my-app
