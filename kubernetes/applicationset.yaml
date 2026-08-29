@@ -21,13 +21,13 @@ spec:
       source:
         repoURL: "https://github.com/bruceminanga/m-treat-project.git"
         targetRevision: main
-        path: "kubernetes/overlays/{{env}}" # 👈 MUST have "kubernetes/" in the path
+        path: "kubernetes/overlays/{{env}}"
       destination:
         server: "{{cluster}}"
         namespace: "frontend-{{env}}"
       syncPolicy:
-        automated:
-          prune: true
-          selfHeal: true
+        # automated:               # 👈 Commented out / removed still not using argocd
+        #   prune: true            # 👈 Commented out / removed
+        #   selfHeal: true         # 👈 Commented out / removed
         syncOptions:
           - CreateNamespace=true
