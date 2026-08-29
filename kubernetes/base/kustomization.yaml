@@ -25,8 +25,8 @@ resources:
   - pdb.yaml
 
   # observability stack
-  - prometheusrule.yaml
-  - servicemonitor.yaml
+  # - prometheusrule.yaml
+  # - servicemonitor.yaml
 
 # Common metadata applied to all resources in base
 commonLabels:
