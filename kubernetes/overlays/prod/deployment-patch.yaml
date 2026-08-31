@@ -4,28 +4,11 @@ metadata:
   name: frontend-deployment # No namespace here — Kustomization sets it
 spec:
   replicas: 2
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: M-treat-project
+      app.kubernetes.io/component: frontend
   template:
     spec:
-      # --- 1. Pod-level security context ---
-      securityContext:
-        runAsNonRoot: true
-        runAsUser: 10001
-        runAsGroup: 10001
-        seccompProfile:
-          type: RuntimeDefault
       containers:
         - name: frontend
-          # --- 2. Container-level security context ---
-          securityContext:
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: false
-            capabilities:
-              drop:
-                - ALL
-          resources:
-            requests:
-              cpu: 100m
-              memory: 128Mi
-            limits:
-              cpu: 300m # Fits inside LimitRange max (300m)
-              memory: 256Mi # Fits inside ResourceQuota (2 * 256Mi = 512Mi / 500Mi, or adjust to 200Mi)

@@ -15,6 +15,13 @@ spec:
         app.kubernetes.io/name: M-treat-project
         app.kubernetes.io/component: frontend
     spec:
+      # --- 1. Pod-level security context ---
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: frontend
           envFrom:
@@ -24,6 +31,13 @@ spec:
                 name: frontend-secrets
           image: everyday-is-devops-day-frontend:sha-a123
           imagePullPolicy: IfNotPresent
+          # --- 2. Container-level security context ---
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+            capabilities:
+              drop:
+                - ALL
 
           # 1. Graceful Termination Hook
           lifecycle:

@@ -5,9 +5,16 @@ namespace: frontend-dev
 namePrefix: dev-
 
 resources:
-  - ../../base
+  - ../../base/frontend # Ensure this points directly to where base kustomization.yaml is
   - namespace.yaml
 
 patches:
   - path: deployment-patch.yaml
   - path: configmap-patch.yaml
+
+# Only inject labels UNIQUE to the 'dev' environment:
+labels:
+  - pairs:
+      app.kubernetes.io/instance: frontend-dev
+      environment: dev
+    includeTemplates: true

@@ -5,9 +5,16 @@ namespace: frontend-prod
 namePrefix: prod-
 
 resources:
-  - ../../base
+  - ../../base/frontend
   - namespace.yaml
 
 patches:
   - path: replicas-patch.yaml
   - path: deployment-patch.yaml
+
+# Labels specific to production:
+labels:
+  - pairs:
+      app.kubernetes.io/instance: frontend-prod
+      environment: prod
+    includeTemplates: true
