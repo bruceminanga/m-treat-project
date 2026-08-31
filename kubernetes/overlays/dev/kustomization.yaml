@@ -5,7 +5,7 @@ namespace: frontend-dev
 namePrefix: dev-
 
 resources:
-  - ../../base/frontend # Ensure this points directly to where base kustomization.yaml is
+  - ../../base/ # Ensure this points directly to where base kustomization.yaml is
   - namespace.yaml
 
 patches:

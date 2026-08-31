@@ -5,11 +5,10 @@ namespace: frontend-prod
 namePrefix: prod-
 
 resources:
-  - ../../base/frontend
+  - ../../base/
   - namespace.yaml
 
 patches:
-  - path: replicas-patch.yaml
   - path: deployment-patch.yaml
 
 # Labels specific to production:

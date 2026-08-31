@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend-deployment # No namespace here — Kustomization sets it
+  name: frontend # No namespace here — Kustomization sets it
 spec:
   replicas: 2
   selector:
