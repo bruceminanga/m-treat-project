@@ -1,25 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  labels:
-    app: frontend
-    app.kubernetes.io/managed-by: kustomize
-    app.kubernetes.io/name: my-app
-  name: frontend-deployment
+  name: frontend
 spec:
   replicas: 2
   minReadySeconds: 5
   selector:
     matchLabels:
-      app: frontend
-      app.kubernetes.io/managed-by: kustomize
-      app.kubernetes.io/name: my-app
+      app.kubernetes.io/name: M-treat-project
+      app.kubernetes.io/component: frontend
   template:
     metadata:
       labels:
-        app: frontend
-        app.kubernetes.io/managed-by: kustomize
-        app.kubernetes.io/name: my-app
+        app.kubernetes.io/name: M-treat-project
+        app.kubernetes.io/component: frontend
     spec:
       containers:
         - name: frontend

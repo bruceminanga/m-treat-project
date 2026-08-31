@@ -2,11 +2,6 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: prod-frontend-pdb
-  namespace: frontend-prod
-  labels:
-    app: frontend
-    app.kubernetes.io/name: my-app
-    app.kubernetes.io/managed-by: kustomize
 spec:
   minAvailable: 1
   selector:
