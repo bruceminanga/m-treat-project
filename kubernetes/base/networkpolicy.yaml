@@ -16,7 +16,8 @@ metadata:
 spec:
   podSelector:
     matchLabels:
-      app: frontend
+      app.kubernetes.io/name: M-treat-project
+      app.kubernetes.io/component: frontend
   policyTypes:
     - Ingress
     - Egress

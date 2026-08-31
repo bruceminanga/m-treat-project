@@ -21,8 +21,8 @@ resources:
   - deployment.yaml
 
   # Autoscaling & Resilience:
-  - hpa.yaml
-  - pdb.yaml
+  # - hpa.yaml
+  # - pdb.yaml
 
   # Observability stack:
   # - prometheusrule.yaml
