@@ -3,72 +3,123 @@ kind: Deployment
 metadata:
   name: frontend
 spec:
+  # Run 2 identical copies of the pod for redundancy / high availability
   replicas: 2
+
+  # Wait 5 seconds after a new pod reports "Ready" before declaring it fully healthy
+  # and proceeding to terminate the old pod during a rolling update.
   minReadySeconds: 5
+
+  # Tells the Deployment controller which existing Pods it is responsible for managing
   selector:
     matchLabels:
       app.kubernetes.io/name: M-treat-project
       app.kubernetes.io/component: frontend
+
+  # Template used to generate each Pod
   template:
     metadata:
+      # Labels stamped onto every pod created by this template (must match the selector above!)
       labels:
         app.kubernetes.io/name: M-treat-project
         app.kubernetes.io/component: frontend
+
     spec:
-      # --- 1. Pod-level security context ---
+      # ========================================================================
+      # 1. POD-LEVEL SECURITY CONTEXT (applies to the entire Pod environment)
+      # ========================================================================
       securityContext:
+        # Rejects pod creation if the container tries to run as root (UID 0)
         runAsNonRoot: true
+
+        # Explicitly forces the container processes to run with UID 10001
         runAsUser: 10001
+
+        # Explicitly forces primary GID to 10001
         runAsGroup: 10001
+
+        # Restricts dangerous Linux kernel system calls using the default Docker/containerd seccomp filter
         seccompProfile:
           type: RuntimeDefault
+
       containers:
         - name: frontend
+          image: everyday-is-devops-day-frontend:sha-a123
+
+          # Only pull the image from the registry if it isn't already cached locally on the worker node
+          imagePullPolicy: IfNotPresent
+
+          # Inject environment variables from external ConfigMaps and Secrets:
           envFrom:
             - configMapRef:
-                name: frontend-config
+                name: frontend-config # Injects non-sensitive configs (e.g., API_URL, PORT)
             - secretRef:
-                name: frontend-secrets
-          image: everyday-is-devops-day-frontend:sha-a123
-          imagePullPolicy: IfNotPresent
-          # --- 2. Container-level security context ---
+                name: frontend-secrets # Injects sensitive credentials (e.g., API_KEY, DB_PASS)
+
+          # ====================================================================
+          # 2. CONTAINER-LEVEL SECURITY CONTEXT (applies to this specific container)
+          # ====================================================================
           securityContext:
+            # Prevents processes from gaining more privileges than their parent process (e.g., blocks sudo/setuid)
             allowPrivilegeEscalation: false
+
+            # When set to 'false', the container file system is writable.
+            # (Setting to 'true' is even safer, but many frontend runtimes need /tmp or cache dirs)
             readOnlyRootFilesystem: false
+
+            # Drops all Linux kernel capabilities (like raw socket creation, system rebooting, etc.)
             capabilities:
               drop:
                 - ALL
 
-          # 1. Graceful Termination Hook
+          # ====================================================================
+          # 3. ZERO-DOWNTIME LIFECYCLE HOOK
+          # ====================================================================
           lifecycle:
+            # Runs right BEFORE the pod is sent a SIGTERM signal during deletion/rolling update.
+            # Why sleep 5? It gives Kubernetes time to remove this pod's IP from the Service/Ingress endpoints
+            # so in-flight requests finish cleanly and don't hit a dead container (prevents 502 errors).
             preStop:
               exec:
                 command: ["/bin/sh", "-c", "sleep 5"]
 
+          # ====================================================================
+          # 4. HEALTH CHECK: Liveness Probe
+          # "Is the container alive or locked up/deadlocked?"
+          # If this fails, Kubernetes kills the container and restarts it.
+          # ====================================================================
           livenessProbe:
-            failureThreshold: 3
             httpGet:
-              path: /
-              port: 8080
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            timeoutSeconds: 2
+              path: / # Request path
+              port: 8080 # Container port to probe
+            initialDelaySeconds: 5 # Wait 5s after startup before first check
+            periodSeconds: 10 # Check every 10s
+            timeoutSeconds: 2 # Fail check if response takes longer than 2s
+            failureThreshold: 3 # Restart container if it fails 3 consecutive times
 
-          # 2. Tuned Readiness Probe
+          # ====================================================================
+          # 5. HEALTH CHECK: Readiness Probe
+          # "Is the container ready to receive live user traffic right now?"
+          # If this fails, Kubernetes temporarily pulls the pod OUT of the Service rotation (no traffic routed).
+          # ====================================================================
           readinessProbe:
-            failureThreshold: 2
             httpGet:
               path: /
               port: 8080
-            initialDelaySeconds: 3
-            periodSeconds: 5
-            timeoutSeconds: 2
-            successThreshold: 1
+            initialDelaySeconds: 3 # Start checking 3s after startup
+            periodSeconds: 5 # Check every 5s
+            timeoutSeconds: 2 # Must respond within 2s
+            successThreshold: 1 # 1 success marks it healthy again
+            failureThreshold: 2 # 2 failed checks mark it unready (stops sending user traffic)
 
+          # ====================================================================
+          # 6. RESOURCE SPECIFICATION
+          # Governed by the LimitRange and ResourceQuota
+          # ====================================================================
           resources:
-            limits:
-              cpu: 200m
-              memory: 128Mi
             requests:
-              cpu: 100m
-              memory: 128Mi
+              cpu: 100m # Minimum guaranteed CPU: 0.1 cores (fits within Quota 400m for 2 replicas)
+              memory: 128Mi # Minimum guaranteed RAM: 128 MiB (fits within Quota 600Mi for 2 replicas)
+            limits:
+              cpu: 200m # Hard cap on CPU: throttled if exceeding 0.2 cores (below LimitRange max 300m)
+              memory: 128Mi # Hard cap on RAM: killed (OOMKilled) if exceeding 128 MiB (below LimitRange max 256Mi)

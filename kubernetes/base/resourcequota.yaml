@@ -3,9 +3,22 @@ kind: ResourceQuota
 metadata:
   name: frontend-quota
 spec:
+  # 'hard' defines the absolute maximum resource usage allowed across the entire namespace.
+  # If a new pod would cause any of these limits to be exceeded, Kubernetes rejects the pod creation.
   hard:
-    requests.cpu: "400m" # Total reserved CPU for all frontend pods
-    requests.memory: "600Mi" # Max reserved RAM across the namespace
-    limits.cpu: "800m" # Max peak CPU burst
-    limits.memory: "600Mi" # Max peak RAM burst
-    pods: "4" # Max 4 frontend pods (e.g. if HPA scales up)
+    # CPU requests: Sum of all containers' CPU reservations cannot exceed 400 millicores (0.4 CPU cores).
+    requests.cpu: "400m"
+
+    # Memory requests: Sum of all containers' base guaranteed RAM cannot exceed 600 Mebibytes.
+    requests.memory: "600Mi"
+
+    # CPU limits: Maximum burstable CPU across all running containers cannot exceed 800 millicores (0.8 CPU cores).
+    limits.cpu: "800m"
+
+    # Memory limits: Hard ceiling of total RAM across all running pods cannot exceed 600Mi.
+    # Note: If requests.memory == limits.memory, memory cannot burst.
+    limits.memory: "600Mi"
+
+    # Pod count: No more than 4 pods can exist concurrently in this namespace
+    # (prevents an autoscaler or replica surge from spinning up infinite pods).
+    pods: "4"

@@ -4,23 +4,28 @@ metadata:
   name: frontend-limit-range
 spec:
   limits:
+    # Apply these rules at the individual Container level (not the Pod level)
     - type: Container
-      # 1. HARD CEILING: Blocks rogue containers from requesting too much
+
+      # 1. HARD CEILING: Rejects any pod spec where a container asks for MORE than these values.
       max:
-        cpu: 300m
-        memory: 256Mi
+        cpu: 300m # No single container can set a limit higher than 0.3 CPU
+        memory: 256Mi # No single container can set a limit higher than 256 MiB RAM
 
-      # 2. HARD FLOOR: Prevents un-schedulable tiny pods
+      # 2. HARD FLOOR: Rejects any pod spec asking for LESS than these values.
+      # Prevents pods so small that the OS/runtime chokes or scheduler breaks.
       min:
-        cpu: 20m
-        memory: 32Mi
+        cpu: 20m # Minimum allowed is 0.02 CPU cores
+        memory: 32Mi # Minimum allowed is 32 MiB RAM
 
-      # 3. AUTO-INJECTION: If a dev forgets 'limits', K8s injects these
+      # 3. AUTO-INJECTION (LIMITS): If a developer deploys a pod and completely forgets
+      # the 'resources.limits' block, Kubernetes automatically injects these defaults:
       default:
-        cpu: 150m
-        memory: 128Mi
+        cpu: 150m # Default limit: 0.15 CPU
+        memory: 128Mi # Default limit: 128 MiB RAM
 
-      # 4. AUTO-INJECTION: If a dev forgets 'requests', K8s injects these
+      # 4. AUTO-INJECTION (REQUESTS): If a developer deploys a pod and forgets
+      # the 'resources.requests' block, Kubernetes automatically injects these defaults:
       defaultRequest:
-        cpu: 50m
-        memory: 64Mi
+        cpu: 50m # Default request: 0.05 CPU
+        memory: 64Mi # Default request: 64 MiB RAM
