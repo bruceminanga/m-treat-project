@@ -46,6 +46,11 @@ spec:
         - name: frontend
           image: everyday-is-devops-day-frontend:sha-a123
 
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+
           # Only pull the image from the registry if it isn't already cached locally on the worker node
           imagePullPolicy: IfNotPresent
 
@@ -65,7 +70,7 @@ spec:
 
             # When set to 'false', the container file system is writable.
             # (Setting to 'true' is even safer, but many frontend runtimes need /tmp or cache dirs)
-            readOnlyRootFilesystem: false
+            readOnlyRootFilesystem: true
 
             # Drops all Linux kernel capabilities (like raw socket creation, system rebooting, etc.)
             capabilities:
@@ -88,14 +93,15 @@ spec:
           # "Is the container alive or locked up/deadlocked?"
           # If this fails, Kubernetes kills the container and restarts it.
           # ====================================================================
-          livenessProbe:
-            httpGet:
-              path: / # Request path
-              port: 8080 # Container port to probe
-            initialDelaySeconds: 5 # Wait 5s after startup before first check
-            periodSeconds: 10 # Check every 10s
-            timeoutSeconds: 2 # Fail check if response takes longer than 2s
-            failureThreshold: 3 # Restart container if it fails 3 consecutive times
+          # You don't need livenessprobe in here
+          # livenessProbe:
+          #   httpGet:
+          #     path: / # Request path
+          #     port: 8080 # Container port to probe
+          #   initialDelaySeconds: 5 # Wait 5s after startup before first check
+          #   periodSeconds: 10 # Check every 10s
+          #   timeoutSeconds: 2 # Fail check if response takes longer than 2s
+          #   failureThreshold: 3 # Restart container if it fails 3 consecutive times
 
           # ====================================================================
           # 5. HEALTH CHECK: Readiness Probe
@@ -120,6 +126,8 @@ spec:
             requests:
               cpu: 100m # Minimum guaranteed CPU: 0.1 cores (fits within Quota 400m for 2 replicas)
               memory: 128Mi # Minimum guaranteed RAM: 128 MiB (fits within Quota 600Mi for 2 replicas)
+              ephemeral-storage: 50Mi
             limits:
               cpu: 200m # Hard cap on CPU: throttled if exceeding 0.2 cores (below LimitRange max 300m)
               memory: 128Mi # Hard cap on RAM: killed (OOMKilled) if exceeding 128 MiB (below LimitRange max 256Mi)
+              ephemeral-storage: 100Mi
