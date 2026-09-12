@@ -131,3 +131,30 @@ spec:
               cpu: 200m # Hard cap on CPU: throttled if exceeding 0.2 cores (below LimitRange max 300m)
               memory: 128Mi # Hard cap on RAM: killed (OOMKilled) if exceeding 128 MiB (below LimitRange max 256Mi)
               ephemeral-storage: 100Mi
+
+          # ====================================================================
+          # MOUNT WRITABLE DIRECTORIES FOR NGINX
+          # ====================================================================
+          volumeMounts:
+            # 1. Fixes the exact crash: /var/lib/nginx/tmp/client_body
+            - name: nginx-tmp
+              mountPath: /var/lib/nginx/tmp
+
+            # 2. Fixes Nginx PID file creation (/var/run/nginx.pid)
+            - name: nginx-run
+              mountPath: /var/run
+
+            # 3. Standard temporary folder
+            - name: tmp-dir
+              mountPath: /tmp
+
+      # ========================================================================
+      # EPHEMERAL VOLUMES DEFINITION
+      # ========================================================================
+      volumes:
+        - name: nginx-tmp
+          emptyDir: {}
+        - name: nginx-run
+          emptyDir: {}
+        - name: tmp-dir
+          emptyDir: {}

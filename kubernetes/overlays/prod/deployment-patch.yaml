@@ -10,5 +10,18 @@ spec:
       app.kubernetes.io/component: frontend
   template:
     spec:
+      # ========================================================================
+      # POD ANTI-AFFINITY (Soft / Preferred for 1-node compatibility)
+      # ========================================================================
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 100
+              podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/name: M-treat-project
+                    app.kubernetes.io/component: frontend
+                topologyKey: kubernetes.io/hostname
       containers:
         - name: frontend
