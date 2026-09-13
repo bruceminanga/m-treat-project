@@ -1,0 +1,24 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: enforce-observability-labels
+spec:
+  validationFailureAction: Enforce
+  rules:
+    - name: require-standard-k8s-labels
+      match:
+        any:
+        - resources:
+            kinds: [Deployment, StatefulSet]
+      exclude:
+        any:
+        - resources:
+            namespaces: [kube-system, kyverno, kube-node-lease, kube-public]
+      validate:
+        message: "Workloads must contain app.kubernetes.io/name, app.kubernetes.io/part-of, and app.kubernetes.io/version labels."
+        pattern:
+          metadata:
+            labels:
+              app.kubernetes.io/name: "?*"
+              app.kubernetes.io/part-of: "?*"
+              app.kubernetes.io/version: "?*"
