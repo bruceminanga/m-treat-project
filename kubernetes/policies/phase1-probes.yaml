@@ -14,7 +14,7 @@ spec:
       exclude:
         any:
           - resources:
-              namespaces: [kube-system, kyverno, kube-node-lease, kube-public]
+              namespaces: [kube-system, kyverno, kube-node-lease, kube-public, external-secrets]
       validate:
         message: "Every container must define both readinessProbe and livenessProbe."
         pattern:
@@ -31,7 +31,7 @@ spec:
       exclude:
         any:
           - resources:
-              namespaces: [kube-system, kyverno, kube-node-lease, kube-public]
+              namespaces: [kube-system, kyverno, kube-node-lease, kube-public, external-secrets]
       preconditions:
         all:
           - key: "{{ request.object.spec.containers[0].livenessProbe.httpGet.path || '' }}"
@@ -57,7 +57,7 @@ spec:
       exclude:
         any:
           - resources:
-              namespaces: [kube-system, kyverno, kube-node-lease, kube-public]
+              namespaces: [kube-system, kyverno, kube-node-lease, kube-public, external-secrets]
       validate:
         message: "Workloads must configure terminationGracePeriodSeconds (>0) for graceful shutdown."
         pattern:

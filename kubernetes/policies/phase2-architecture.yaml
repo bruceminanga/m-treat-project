@@ -13,7 +13,7 @@ spec:
       exclude:
         any:
         - resources:
-            namespaces: [kube-system, kyverno, kube-node-lease, kube-public]
+            namespaces: [kube-system, kyverno, kube-node-lease, kube-public, external-secrets]
       validate:
         message: "Images must be pinned with immutable SHA256 digest (repo/app@sha256:...)."
         pattern:
@@ -29,7 +29,7 @@ spec:
       exclude:
         any:
         - resources:
-            namespaces: [kube-system, kyverno, kube-node-lease, kube-public]
+            namespaces: [kube-system, kyverno, kube-node-lease, kube-public, external-secrets]
       validate:
         message: "Deployments and StatefulSets must declare topologySpreadConstraints across zones or hosts."
         pattern:

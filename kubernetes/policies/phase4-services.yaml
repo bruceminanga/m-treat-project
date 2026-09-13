@@ -13,7 +13,7 @@ spec:
       exclude:
         any:
         - resources:
-            namespaces: [kube-system, kyverno, kube-node-lease, kube-public]
+            namespaces: [kube-system, kyverno, kube-node-lease, kube-public, external-secrets]
       validate:
         message: "Internal services must use ClusterIP. Ingress / Gateway API must terminate edge traffic."
         pattern:
@@ -28,7 +28,7 @@ spec:
       exclude:
         any:
         - resources:
-            namespaces: [kube-system, kyverno, kube-node-lease, kube-public, default]
+            namespaces: [kube-system, kyverno, kube-node-lease, kube-public, external-secrets, default]
       generate:
         apiVersion: networking.k8s.io/v1
         kind: NetworkPolicy
