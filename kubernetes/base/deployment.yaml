@@ -25,23 +25,17 @@ spec:
         app.kubernetes.io/component: frontend
 
     spec:
+      serviceAccountName: frontend-sa
+      automountServiceAccountToken: false
+
       # ========================================================================
       # 1. POD-LEVEL SECURITY CONTEXT (applies to the entire Pod environment)
       # ========================================================================
       securityContext:
-        # Rejects pod creation if the container tries to run as root (UID 0)
         runAsNonRoot: true
-
-        # Explicitly forces the container processes to run with UID 10001
         runAsUser: 10001
-
-        # Explicitly forces primary GID to 10001
-        runAsGroup: 10001
-
-        # Restricts dangerous Linux kernel system calls using the default Docker/containerd seccomp filter
         seccompProfile:
           type: RuntimeDefault
-
       containers:
         - name: frontend
           image: everyday-is-devops-day-frontend:sha-a123
@@ -65,14 +59,10 @@ spec:
           # 2. CONTAINER-LEVEL SECURITY CONTEXT (applies to this specific container)
           # ====================================================================
           securityContext:
-            # Prevents processes from gaining more privileges than their parent process (e.g., blocks sudo/setuid)
+            runAsNonRoot: true
+            runAsUser: 10001
             allowPrivilegeEscalation: false
-
-            # When set to 'false', the container file system is writable.
-            # (Setting to 'true' is even safer, but many frontend runtimes need /tmp or cache dirs)
             readOnlyRootFilesystem: true
-
-            # Drops all Linux kernel capabilities (like raw socket creation, system rebooting, etc.)
             capabilities:
               drop:
                 - ALL

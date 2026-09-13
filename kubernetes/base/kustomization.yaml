@@ -9,6 +9,7 @@ resources:
 
   # Security & Firewall:
   - networkpolicy.yaml
+  - serviceaccount.yaml
 
   # Traffic & Ingress:
   - service.yaml
@@ -45,10 +46,16 @@ secretGenerator:
     type: Opaque
 
 # Modern way to automatically inject labels across all resources above:
-labels:
-  - pairs:
-      app.kubernetes.io/name: M-treat-project #Overal project name
-      app.kubernetes.io/component: frontend
-      app.kubernetes.io/managed-by: kustomize
-    # includeSelectors: true # Automatically generates and matches selectors in Deployment, Service, PDB, etc.
-    includeTemplates: true # Automatically injects labels into Pod templates' even though, overlays/dev and prod also have their own kustomization.yaml files
+# labels:
+#   - pairs:
+#       app.kubernetes.io/name: M-treat-project #Overal project name
+#       app.kubernetes.io/component: frontend
+#       app.kubernetes.io/managed-by: kustomize
+#       app.kubernetes.io/part-of: m-treat-platform
+#     # includeSelectors: true # Automatically generates and matches selectors in Deployment, Service, PDB, etc.
+#     includeTemplates: true # Automatically injects labels into Pod templates' even though, overlays/dev and prod also have their own kustomization.yaml files
+
+commonLabels:
+  app.kubernetes.io/name: M-treat-project
+  app.kubernetes.io/part-of: m-treat-platform
+  app.kubernetes.io/version: "1.0.0"

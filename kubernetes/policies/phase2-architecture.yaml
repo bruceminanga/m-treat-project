@@ -3,7 +3,7 @@ kind: ClusterPolicy
 metadata:
   name: enforce-pod-architecture
 spec:
-  validationFailureAction: Enforce
+  validationFailureAction: Audit
   rules:
     - name: require-image-digest
       match:

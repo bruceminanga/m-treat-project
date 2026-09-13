@@ -10,6 +10,7 @@ spec:
         any:
         - resources:
             kinds: [Pod]
+            operations: [CREATE, UPDATE]
       exclude:
         any:
         - resources:
@@ -33,6 +34,7 @@ spec:
         any:
         - resources:
             kinds: [Pod]
+            operations: [CREATE, UPDATE]    # <-- ONLY RUN ON CREATE/UPDATE
       exclude:
         any:
         - resources:
@@ -41,7 +43,10 @@ spec:
         message: "Workloads must declare a dedicated ServiceAccount and cannot use 'default'."
         deny:
           conditions:
-            any:
+            all:
+            - key: "{{ request.operation }}"
+              operator: In
+              value: ["CREATE", "UPDATE"]
             - key: "{{ request.object.spec.serviceAccountName || '' }}"
               operator: In
               value: ["default", ""]

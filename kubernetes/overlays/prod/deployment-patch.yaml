@@ -10,6 +10,13 @@ spec:
       app.kubernetes.io/component: frontend
   template:
     spec:
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: kubernetes.io/hostname
+          whenUnsatisfiable: ScheduleAnyway # Or DoNotSchedule in multi-node clusters
+          labelSelector:
+            matchLabels:
+              app.kubernetes.io/component: frontend
       # ========================================================================
       # POD ANTI-AFFINITY (Soft / Preferred for 1-node compatibility)
       # ========================================================================

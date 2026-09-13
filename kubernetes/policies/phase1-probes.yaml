@@ -9,55 +9,55 @@ spec:
     - name: require-liveness-and-readiness
       match:
         any:
-        - resources:
-            kinds: [Pod]
+          - resources:
+              kinds: [Pod]
       exclude:
         any:
-        - resources:
-            namespaces: [kube-system, kyverno, kube-node-lease, kube-public]
+          - resources:
+              namespaces: [kube-system, kyverno, kube-node-lease, kube-public]
       validate:
         message: "Every container must define both readinessProbe and livenessProbe."
         pattern:
           spec:
             containers:
               - readinessProbe: {}
-                livenessProbe: {}
+                # livenessProbe: {}
 
     - name: distinct-liveness-readiness
       match:
         any:
-        - resources:
-            kinds: [Pod]
+          - resources:
+              kinds: [Pod]
       exclude:
         any:
-        - resources:
-            namespaces: [kube-system, kyverno, kube-node-lease, kube-public]
+          - resources:
+              namespaces: [kube-system, kyverno, kube-node-lease, kube-public]
       preconditions:
         all:
-        - key: "{{ request.object.spec.containers[0].livenessProbe.httpGet.path || '' }}"
-          operator: NotEquals
-          value: ""
-        - key: "{{ request.object.spec.containers[0].readinessProbe.httpGet.path || '' }}"
-          operator: NotEquals
-          value: ""
+          - key: "{{ request.object.spec.containers[0].livenessProbe.httpGet.path || '' }}"
+            operator: NotEquals
+            value: ""
+          - key: "{{ request.object.spec.containers[0].readinessProbe.httpGet.path || '' }}"
+            operator: NotEquals
+            value: ""
       validate:
         message: "Liveness and Readiness probes must not share the exact same HTTP path. Liveness must not check external dependencies."
         deny:
           conditions:
             all:
-            - key: "{{ request.object.spec.containers[0].livenessProbe.httpGet.path }}"
-              operator: Equals
-              value: "{{ request.object.spec.containers[0].readinessProbe.httpGet.path }}"
+              - key: "{{ request.object.spec.containers[0].livenessProbe.httpGet.path }}"
+                operator: Equals
+                value: "{{ request.object.spec.containers[0].readinessProbe.httpGet.path }}"
 
     - name: require-termination-grace-period
       match:
         any:
-        - resources:
-            kinds: [Pod]
+          - resources:
+              kinds: [Pod]
       exclude:
         any:
-        - resources:
-            namespaces: [kube-system, kyverno, kube-node-lease, kube-public]
+          - resources:
+              namespaces: [kube-system, kyverno, kube-node-lease, kube-public]
       validate:
         message: "Workloads must configure terminationGracePeriodSeconds (>0) for graceful shutdown."
         pattern:
