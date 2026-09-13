@@ -1,29 +1,54 @@
-#This is just running nginx
-
-# =============================================================================
-# Stage 1: Build Stage
-# =============================================================================
-FROM node:22.14.0-alpine@sha256:9bef0ef1e268f60627da9ba7d7605e8831d5b56ad07487d24d1aa386336d1944 AS builder
+# ==============================================================================
+# STAGE 1: Builder (Compiles React app with native CPU speed & BuildKit cache)
+# ==============================================================================
+FROM --platform=$BUILDPLATFORM node:22.14.0-alpine@sha256:9bef0ef1e268f60627da9ba7d7605e8831d5b56ad07487d24d1aa386336d1944 AS builder
 
 WORKDIR /app
 
+# Copy dependency manifests first for layer caching
 COPY package*.json ./
 
+# Fast BuildKit-cached dependency install
 RUN --mount=type=cache,target=/root/.npm \
     npm ci --prefer-offline --no-audit --no-fund
 
+# Copy source code and build
 COPY . .
-
+ENV NODE_ENV=production
 RUN npm run build
 
-# =============================================================================
-# Stage 2: Production Nginx Server
-# =============================================================================
-FROM nginx:alpine
 
-# Copy from /static/dist (matching your vite.config.js outDir)
-COPY --from=builder /static/dist /usr/share/nginx/html
+# ==============================================================================
+# STAGE 2: Hardened Runtime (Lightweight ~25MB Nginx serving static assets)
+# ==============================================================================
+FROM nginx:1.27-alpine@sha256:45ba86518175d71c4c8ff79a29e160a2b8e390c2eb78d91c1209b2e043bbdfa5 AS runner
 
-EXPOSE 80
+# 1. OCI Standard Metadata Labels (Phase 3)
+LABEL org.opencontainers.image.title="m-treat-frontend" \
+      org.opencontainers.image.description="Production React frontend" \
+      org.opencontainers.image.version="1.0.0" \
+      org.opencontainers.image.authors="Bruce Minanga"
+
+WORKDIR /usr/share/nginx/html
+
+# Clean default Nginx welcome page
+RUN rm -rf ./*
+
+# Copy compiled React artifacts from builder (use 'dist' for Vite or 'build' for CRA)
+COPY --from=builder /app/dist ./
+
+# Set up unprivileged permissions for Nginx temporary directories
+RUN touch /var/run/nginx.pid && \
+    chown -R 10001:10001 /var/run/nginx.pid /var/cache/nginx /usr/share/nginx/html
+
+# 2. Run as Non-Root User (Phase 3 & Phase 5)
+USER 10001:10001
+
+# 3. Healthcheck Directive (Phase 4)
+HEALTHCHECK --interval=30s --timeout=3s --retries=3 \
+  CMD wget -qO- http://127.0.0.1:8080/ || exit 1
+
+# Document port (8080 for non-root)
+EXPOSE 8080
 
 CMD ["nginx", "-g", "daemon off;"]
