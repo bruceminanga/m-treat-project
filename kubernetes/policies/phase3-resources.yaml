@@ -13,7 +13,7 @@ spec:
       exclude:
         any:
         - resources:
-            namespaces: [kube-system, kyverno, kube-node-lease, kube-public, external-secrets]
+            namespaces: [kube-system, monitoring, argocd, kyverno, kube-node-lease, kube-public, external-secrets]
       validate:
         message: "All containers must define CPU and Memory requests and limits."
         pattern:
@@ -35,7 +35,7 @@ spec:
       exclude:
         any:
         - resources:
-            namespaces: [kube-system, kyverno, kube-node-lease, kube-public, external-secrets]
+            namespaces: [kube-system, monitoring, argocd, kyverno, kube-node-lease, kube-public, external-secrets]
       validate:
         message: "Memory limit must equal memory request for Guaranteed QoS."
         deny:

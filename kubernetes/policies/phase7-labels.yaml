@@ -13,7 +13,7 @@ spec:
       exclude:
         any:
         - resources:
-            namespaces: [kube-system, kyverno, kube-node-lease, kube-public, external-secrets]
+            namespaces: [kube-system, monitoring, argocd, kyverno, kube-node-lease, kube-public, external-secrets]
       validate:
         message: "Workloads must contain app.kubernetes.io/name, app.kubernetes.io/part-of, and app.kubernetes.io/version labels."
         pattern:
