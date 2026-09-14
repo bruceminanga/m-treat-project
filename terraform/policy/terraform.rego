@@ -1,34 +1,8 @@
 package main
 
-# 1. Phase 2: Remote State is Mandatory (Never allow local state backend)
-deny contains msg if {
-    some backend_type
-    backend := input.terraform[0].backend[backend_type]
-    backend_type == "local"
-    msg := "[Phase 2] Local state backend is forbidden. You must use a remote backend (S3, GCS, or HCP Terraform)."
-}
-
-# 2. Phase 4: Treat Provisioners as a Last Resort (Ban local-exec & remote-exec)
-deny contains msg if {
-    some resource_type
-    resource := input.resource[resource_type]
-    some resource_name
-    instance := resource[resource_name]
-    some provisioner in instance.provisioner
-    some prov_type
-    _ := provisioner[prov_type]
-    msg := sprintf("[Phase 4] Resource '%v.%v' uses '%v' provisioner. Provisioners break idempotency; use cloud-init or user_data instead.", [resource_type, resource_name, prov_type])
-}
-
-# 3. Phase 4: Critical Data Protection (Databases must have prevent_destroy = true)
-deny contains msg if {
-    some db_name
-    db := input.resource.aws_db_instance[db_name]
-    not db.lifecycle.prevent_destroy == true
-    msg := sprintf("[Phase 4] Database 'aws_db_instance.%v' must set 'lifecycle { prevent_destroy = true }' to protect against accidental deletion.", [db_name])
-}
-
-# 4. Phase 1: Mandatory Tagging Standard (Must have Environment, Owner, ManagedBy)
+# ==============================================================================
+# PHASE 1: Mandatory Tagging Standard (Must have Environment, Owner, ManagedBy)
+# ==============================================================================
 deny contains msg if {
     some resource_type
     resource := input.resource[resource_type]
@@ -47,7 +21,43 @@ deny contains msg if {
     msg := sprintf("[Phase 1] Resource '%v.%v' is missing mandatory tags: %v", [resource_type, resource_name, missing_tags])
 }
 
-# 5. Phase 5: Security Compliance (No 0.0.0.0/0 open SSH on Port 22)
+# ==============================================================================
+# PHASE 2: Remote State is Mandatory (Never allow local state backend)
+# ==============================================================================
+deny contains msg if {
+    some backend_type
+    backend := input.terraform[0].backend[backend_type]
+    backend_type == "local"
+    msg := "[Phase 2] Local state backend is forbidden. You must use a remote backend (S3, GCS, or HCP Terraform)."
+}
+
+# ==============================================================================
+# PHASE 4: Treat Provisioners as a Last Resort (Ban local-exec & remote-exec)
+# ==============================================================================
+deny contains msg if {
+    some resource_type
+    resource := input.resource[resource_type]
+    some resource_name
+    instance := resource[resource_name]
+    some provisioner in instance.provisioner
+    some prov_type
+    _ := provisioner[prov_type]
+    msg := sprintf("[Phase 4] Resource '%v.%v' uses '%v' provisioner. Provisioners break idempotency; use cloud-init or user_data instead.", [resource_type, resource_name, prov_type])
+}
+
+# ==============================================================================
+# PHASE 4: Critical Data Protection (Databases must have prevent_destroy = true)
+# ==============================================================================
+deny contains msg if {
+    some db_name
+    db := input.resource.aws_db_instance[db_name]
+    not db.lifecycle.prevent_destroy == true
+    msg := sprintf("[Phase 4] Database 'aws_db_instance.%v' must set 'lifecycle { prevent_destroy = true }' to protect against accidental deletion.", [db_name])
+}
+
+# ==============================================================================
+# PHASE 5: Security Compliance (No 0.0.0.0/0 open SSH on Port 22)
+# ==============================================================================
 deny contains msg if {
     some sg_name
     sg := input.resource.aws_security_group[sg_name]
