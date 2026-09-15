@@ -8,6 +8,7 @@ module "vpc" {
   environment = local.environment
   aws_region  = "us-east-1"
   vpc_cidr    = "10.0.0.0/16"
+  private_subnet_cidr = "10.0.2.0/24"
 }
 
 # 2. Storage Layer
