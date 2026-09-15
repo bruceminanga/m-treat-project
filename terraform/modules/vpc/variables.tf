@@ -38,3 +38,9 @@ variable "private_subnet_b_cidr" {
   description = "CIDR for Private Subnet B"
   default     = "10.0.20.0/24"
 }
+
+variable "enable_nat_gateway" {
+  description = "Enable NAT Gateway (costs ~$32/mo on real AWS)"
+  type        = bool
+  default     = false
+}
