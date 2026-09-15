@@ -1,28 +1,40 @@
 variable "environment" {
-  description = "Deployment environment name (e.g., dev, staging, prod)"
   type        = string
+  description = "Environment name (dev, staging, prod)"
 }
 
 variable "aws_region" {
-  description = "AWS region for subnet placement"
   type        = string
+  description = "AWS region (e.g. us-east-1)"
   default     = "us-east-1"
 }
 
 variable "vpc_cidr" {
-  description = "CIDR block for the VPC"
   type        = string
+  description = "CIDR block for the VPC"
   default     = "10.0.0.0/16"
 }
 
-variable "public_subnet_cidr" {
-  description = "CIDR block for the public subnet"
+variable "public_subnet_a_cidr" {
   type        = string
+  description = "CIDR for Public Subnet A"
   default     = "10.0.1.0/24"
 }
 
-variable "private_subnet_cidr" {
-  description = "CIDR block for the private subnet"
+variable "public_subnet_b_cidr" {
   type        = string
-  default     = "10.0.2.0/24" # Optional: gives it a default value
+  description = "CIDR for Public Subnet B (Needed for ALB)"
+  default     = "10.0.2.0/24"
+}
+
+variable "private_subnet_a_cidr" {
+  type        = string
+  description = "CIDR for Private Subnet A"
+  default     = "10.0.10.0/24"
+}
+
+variable "private_subnet_b_cidr" {
+  type        = string
+  description = "CIDR for Private Subnet B"
+  default     = "10.0.20.0/24"
 }

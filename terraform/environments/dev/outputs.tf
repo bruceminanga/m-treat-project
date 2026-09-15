@@ -17,3 +17,8 @@ output "app_url" {
   description = "Application URL"
   value       = module.ec2.app_url
 }
+
+output "website_url" {
+  description = "The public URL to access the application"
+  value       = var.enable_alb ? "http://${module.alb[0].alb_dns_name}" : "ALB disabled (testing on LocalStack)"
+}

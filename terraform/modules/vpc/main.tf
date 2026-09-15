@@ -12,7 +12,7 @@ resource "aws_vpc" "this" {
 }
 
 # ==============================================================================
-# 2. The Front Door or main gate (Internet Gateway)
+# 2. The Front Door or Main Gate (Internet Gateway)
 # ==============================================================================
 resource "aws_internet_gateway" "this" {
   vpc_id = aws_vpc.this.id
@@ -23,21 +23,34 @@ resource "aws_internet_gateway" "this" {
 }
 
 # ==============================================================================
-# 3. The Living Room (Public Subnet)
+# 3. The Public Living Rooms (Public Subnets across 2 Availability Zones)
 # ==============================================================================
-resource "aws_subnet" "public" {
+# Zone A Public Subnet
+resource "aws_subnet" "public_a" {
   vpc_id                  = aws_vpc.this.id
-  cidr_block              = var.public_subnet_cidr
+  cidr_block              = var.public_subnet_a_cidr
   availability_zone       = "${var.aws_region}a"
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "${var.environment}-public-subnet"
+    Name = "${var.environment}-public-subnet-a"
+  }
+}
+
+# Zone B Public Subnet (Required for the Application Load Balancer)
+resource "aws_subnet" "public_b" {
+  vpc_id                  = aws_vpc.this.id
+  cidr_block              = var.public_subnet_b_cidr
+  availability_zone       = "${var.aws_region}b"
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name = "${var.environment}-public-subnet-b"
   }
 }
 
 # ==============================================================================
-# 4. Public Direction Sign & Wiring like a road sign(Route Table + Association)
+# 4. Public Direction Signs & Wiring (Public Route Table + Associations)
 # ==============================================================================
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.this.id
@@ -52,43 +65,61 @@ resource "aws_route_table" "public" {
   }
 }
 
-# (The wiring stays right here with its parent table)
-resource "aws_route_table_association" "public" {
-  subnet_id      = aws_subnet.public.id
+# Wire Zone A to the public road sign
+resource "aws_route_table_association" "public_a" {
+  subnet_id      = aws_subnet.public_a.id
+  route_table_id = aws_route_table.public.id
+}
+
+# Wire Zone B to the public road sign
+resource "aws_route_table_association" "public_b" {
+  subnet_id      = aws_subnet.public_b.id
   route_table_id = aws_route_table.public.id
 }
 
 # ==============================================================================
-# 5. The Back Bedroom (Private Subnet - For DBs & Sensitive Workloads)
+# 5. The Private Back Bedrooms (Private Subnets for Databases/Internal Workloads)
 # ==============================================================================
-resource "aws_subnet" "private" {
+# Zone A Private Subnet
+resource "aws_subnet" "private_a" {
   vpc_id                  = aws_vpc.this.id
-  cidr_block              = var.private_subnet_cidr
+  cidr_block              = var.private_subnet_a_cidr
   availability_zone       = "${var.aws_region}a"
-  map_public_ip_on_launch = false   # 👈 No public IPs allowed!
+  map_public_ip_on_launch = false
 
   tags = {
-    Name = "${var.environment}-private-subnet"
+    Name = "${var.environment}-private-subnet-a"
+  }
+}
+
+# Zone B Private Subnet
+resource "aws_subnet" "private_b" {
+  vpc_id                  = aws_vpc.this.id
+  cidr_block              = var.private_subnet_b_cidr
+  availability_zone       = "${var.aws_region}b"
+  map_public_ip_on_launch = false
+
+  tags = {
+    Name = "${var.environment}-private-subnet-b"
   }
 }
 
 # ==============================================================================
 # 6. The House Wi-Fi Router (NAT Gateway + Private Route Table)
 # ==============================================================================
-# A dedicated public IP so the router can talk to the public internet
+# Elastic IP for the NAT Gateway
 resource "aws_eip" "nat" {
   domain = "vpc"
+
   tags = {
     Name = "${var.environment}-nat-eip"
   }
 }
 
-# The NAT Gateway acts like your home Wi-Fi router:
-# It sits in the public room and lets private devices fetch web data,
-# while keeping them completely hidden and unreachable from the outside.
+# The NAT Gateway sits in Public Subnet A
 resource "aws_nat_gateway" "this" {
   allocation_id = aws_eip.nat.id
-  subnet_id     = aws_subnet.public.id
+  subnet_id     = aws_subnet.public_a.id
 
   tags = {
     Name = "${var.environment}-nat-gateway"
@@ -97,8 +128,7 @@ resource "aws_nat_gateway" "this" {
   depends_on = [aws_internet_gateway.this]
 }
 
-# The private road sign: send outbound internet requests (0.0.0.0/0)
-# to the NAT Gateway router, NEVER directly to the main front door (IGW).
+# Private Route Table pointing to the NAT Gateway
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.this.id
 
@@ -112,8 +142,13 @@ resource "aws_route_table" "private" {
   }
 }
 
-# Connect the private back bedroom (subnet) to this router road sign
-resource "aws_route_table_association" "private" {
-  subnet_id      = aws_subnet.private.id
+# Wire both private bedrooms to the NAT router
+resource "aws_route_table_association" "private_a" {
+  subnet_id      = aws_subnet.private_a.id
+  route_table_id = aws_route_table.private.id
+}
+
+resource "aws_route_table_association" "private_b" {
+  subnet_id      = aws_subnet.private_b.id
   route_table_id = aws_route_table.private.id
 }
