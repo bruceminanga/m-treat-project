@@ -3,7 +3,7 @@ kind: PodDisruptionBudget
 metadata:
   name: prod-frontend-pdb
 spec:
-  maxUnavailable: 1
+  maxUnavailable: 1 # "You can kill at most 1 pod at a time"
 
   # ====================================================================
   # PREVENTS BROKEN PODS FROM BLOCKING NODE DRAINS / UPGRADES
