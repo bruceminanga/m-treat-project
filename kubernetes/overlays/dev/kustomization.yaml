@@ -5,8 +5,11 @@ namespace: frontend-dev
 namePrefix: dev-
 
 resources:
-  - ../../base/ # Ensure this points directly to where base kustomization.yaml is
+  - ../../base/frontend # Ensure this points directly to where base kustomization.yaml is
+  - ../../base/backend
+  - ../../base/shared
   - namespace.yaml
+  - ingress.yaml
 
 # Only inject labels UNIQUE to the 'dev' environment:
 labels:
