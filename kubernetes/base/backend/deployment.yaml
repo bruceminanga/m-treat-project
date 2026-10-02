@@ -19,46 +19,60 @@ spec:
       automountServiceAccountToken: false
       securityContext:
         runAsNonRoot: true
-        runAsUser: 10001
-        runAsGroup: 10001
-        fsGroup: 10001
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
         seccompProfile:
           type: RuntimeDefault
       containers:
         - name: backend
-          image: everyday-is-devops-day-backend:sha-a123
+          image: everyday-is-devops-day-backend:v4
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
               containerPort: 8000
               protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: backend-config # Kustomize will automatically map this to dev-backend-config-<hash>
+            - secretRef:
+                name: backend-secret # Kustomize will automatically map this to dev-backend-secret-<hash>
           env:
             - name: PYTHONUNBUFFERED
               value: "1"
-          readinessProbe:
-            httpGet:
-              path: /api/ # Or /api/health/ or whatever endpoint Django responds to
-              port: 8000
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            timeoutSeconds: 2
-            failureThreshold: 3
-          livenessProbe:
-            httpGet:
-              path: /api/
-              port: 8000
-            initialDelaySeconds: 15
-            periodSeconds: 20
-            timeoutSeconds: 2
-            failureThreshold: 3
+            - name: ALLOWED_HOSTS
+              value: "*"
+            - name: DB_HOST # Use whatever env var your settings.py reads (e.g., DATABASE_HOST, DB_HOST, POSTGRES_HOST)
+              value: "dev-postgres"
+            - name: DB_PORT
+              value: "5432"
+          # readinessProbe:
+          #   httpGet:
+          #     path: /api/ # Or /api/health/ or whatever endpoint Django responds to
+          #     port: 8000
+          #     httpHeaders:
+          #       - name: Host
+          #         value: localhost
+          #   initialDelaySeconds: 5
+          #   periodSeconds: 10
+          #   timeoutSeconds: 2
+          #   failureThreshold: 3
+          # livenessProbe:
+          #   httpGet:
+          #     path: /api/
+          #     port: 8000
+          #   initialDelaySeconds: 15
+          #   periodSeconds: 20
+          #   timeoutSeconds: 2
+          #   failureThreshold: 3
           resources:
             requests:
-              cpu: 100m
-              memory: 128Mi
+              cpu: 1000m
+              memory: 256Mi
               ephemeral-storage: 50Mi
             limits:
-              cpu: 200m
-              memory: 192Mi
+              cpu: 1000m
+              memory: 512Mi
               ephemeral-storage: 100Mi
           securityContext:
             allowPrivilegeEscalation: false

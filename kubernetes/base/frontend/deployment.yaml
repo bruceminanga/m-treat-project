@@ -52,8 +52,8 @@ spec:
 
           # Inject environment variables from external ConfigMaps and Secrets:
           envFrom:
-            - configMapRef:
-                name: frontend-config # Injects non-sensitive configs (e.g., API_URL, PORT)
+            # - configMapRef:
+            #     name: frontend-config # Injects non-sensitive configs (e.g., API_URL, PORT)
             - secretRef:
                 name: frontend-secrets # Injects sensitive credentials (e.g., API_KEY, DB_PASS)
 
@@ -73,13 +73,13 @@ spec:
           # ====================================================================
           # 3. ZERO-DOWNTIME LIFECYCLE HOOK
           # ====================================================================
-          lifecycle:
-            # Runs right BEFORE the pod is sent a SIGTERM signal during deletion/rolling update.
-            # Why sleep 5? It gives Kubernetes time to remove this pod's IP from the Service/Ingress endpoints
-            # so in-flight requests finish cleanly and don't hit a dead container (prevents 502 errors).
-            preStop:
-              exec:
-                command: ["/bin/sh", "-c", "sleep 5"]
+          # lifecycle:
+          #   # Runs right BEFORE the pod is sent a SIGTERM signal during deletion/rolling update.
+          #   # Why sleep 5? It gives Kubernetes time to remove this pod's IP from the Service/Ingress endpoints
+          #   # so in-flight requests finish cleanly and don't hit a dead container (prevents 502 errors).
+          #   preStop:
+          #     exec:
+          #       command: ["/bin/sh", "-c", "sleep 5"]
 
           # ====================================================================
           # 4. HEALTH CHECK: Liveness Probe

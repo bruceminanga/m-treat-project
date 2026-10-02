@@ -5,11 +5,28 @@ namespace: frontend-dev
 namePrefix: dev-
 
 resources:
-  - ../../base/frontend # Ensure this points directly to where base kustomization.yaml is
-  - ../../base/backend
-  - ../../base/shared
+  - ../../base/ # Ensure this points directly to where base kustomization.yaml is
   - namespace.yaml
   - ingress.yaml
+
+configMapGenerator:
+  - name: backend-config
+    literals:
+      - DEBUG=True
+      - ALLOWED_HOSTS=*
+      - POSTGRES_DB=mydb
+      - POSTGRES_USER=myuser
+      - POSTGRES_HOST=dev-postgres
+      - POSTGRES_PORT=5432
+      - DJANGO_SUPERUSER_USERNAME=bruce
+      - DJANGO_SUPERUSER_EMAIL=admin@example.com
+
+secretGenerator:
+  - name: backend-secret
+    literals:
+      - SECRET_KEY=any-local-secret-key-here
+      - POSTGRES_PASSWORD=stronglocalpassword
+      - DJANGO_SUPERUSER_PASSWORD=stronglocalpassword
 
 # Only inject labels UNIQUE to the 'dev' environment:
 labels:
