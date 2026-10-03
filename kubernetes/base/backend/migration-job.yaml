@@ -1,0 +1,27 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: django-migration
+spec:
+  ttlSecondsAfterFinished: 300
+  backoffLimit: 2
+  template:
+    spec:
+      serviceAccountName: dev-backend-sa # Uses your dedicated SA instead of 'default'
+      restartPolicy: OnFailure
+      containers:
+        - name: django-migration
+          image: everyday-is-devops-day-backend:v4
+          command: ["python", "manage.py", "migrate"]
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          envFrom:
+            - configMapRef:
+                name: dev-backend-config-bd6ghtd46g # <-- Fixed name
+            - secretRef:
+                name: dev-backend-secret-8652928k94 # <-- Fixed name

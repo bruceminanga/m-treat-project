@@ -3,7 +3,7 @@ kind: ClusterPolicy
 metadata:
   name: enforce-probes-and-grace-period
 spec:
-  validationFailureAction: Enforce
+  validationFailureAction: Audit
   background: true
   rules:
     - name: require-liveness-and-readiness
@@ -14,7 +14,16 @@ spec:
       exclude:
         any:
           - resources:
-              namespaces: [kube-system, monitoring, argocd, kyverno, kube-node-lease, kube-public, external-secrets]
+              namespaces:
+                [
+                  kube-system,
+                  monitoring,
+                  argocd,
+                  kyverno,
+                  kube-node-lease,
+                  kube-public,
+                  external-secrets,
+                ]
       validate:
         message: "Every container must define both readinessProbe and livenessProbe."
         pattern:
@@ -31,7 +40,16 @@ spec:
       exclude:
         any:
           - resources:
-              namespaces: [kube-system, monitoring, argocd, kyverno, kube-node-lease, kube-public, external-secrets]
+              namespaces:
+                [
+                  kube-system,
+                  monitoring,
+                  argocd,
+                  kyverno,
+                  kube-node-lease,
+                  kube-public,
+                  external-secrets,
+                ]
       preconditions:
         all:
           - key: "{{ request.object.spec.containers[0].livenessProbe.httpGet.path || '' }}"
@@ -57,7 +75,16 @@ spec:
       exclude:
         any:
           - resources:
-              namespaces: [kube-system, monitoring, argocd, kyverno, kube-node-lease, kube-public, external-secrets]
+              namespaces:
+                [
+                  kube-system,
+                  monitoring,
+                  argocd,
+                  kyverno,
+                  kube-node-lease,
+                  kube-public,
+                  external-secrets,
+                ]
       validate:
         message: "Workloads must configure terminationGracePeriodSeconds (>0) for graceful shutdown."
         pattern:

@@ -67,11 +67,11 @@ spec:
           #   failureThreshold: 3
           resources:
             requests:
-              cpu: 1000m
+              cpu: 200m
               memory: 256Mi
               ephemeral-storage: 50Mi
             limits:
-              cpu: 1000m
+              cpu: 500m
               memory: 512Mi
               ephemeral-storage: 100Mi
           securityContext:

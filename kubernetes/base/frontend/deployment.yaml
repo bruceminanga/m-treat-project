@@ -4,7 +4,7 @@ metadata:
   name: frontend
 spec:
   # Run 2 identical copies of the pod for redundancy / high availability
-  replicas: 2
+  replicas: 1
 
   # Wait 5 seconds after a new pod reports "Ready" before declaring it fully healthy
   # and proceeding to terminate the old pod during a rolling update.

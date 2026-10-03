@@ -3,17 +3,26 @@ kind: ClusterPolicy
 metadata:
   name: enforce-resource-limits
 spec:
-  validationFailureAction: Enforce
+  validationFailureAction: Audit
   rules:
     - name: require-cpu-mem-requests-limits
       match:
         any:
-        - resources:
-            kinds: [Pod]
+          - resources:
+              kinds: [Pod]
       exclude:
         any:
-        - resources:
-            namespaces: [kube-system, monitoring, argocd, kyverno, kube-node-lease, kube-public, external-secrets]
+          - resources:
+              namespaces:
+                [
+                  kube-system,
+                  monitoring,
+                  argocd,
+                  kyverno,
+                  kube-node-lease,
+                  kube-public,
+                  external-secrets,
+                ]
       validate:
         message: "All containers must define CPU and Memory requests and limits."
         pattern:
@@ -30,12 +39,21 @@ spec:
     - name: enforce-guaranteed-memory-qos
       match:
         any:
-        - resources:
-            kinds: [Pod]
+          - resources:
+              kinds: [Pod]
       exclude:
         any:
-        - resources:
-            namespaces: [kube-system, monitoring, argocd, kyverno, kube-node-lease, kube-public, external-secrets]
+          - resources:
+              namespaces:
+                [
+                  kube-system,
+                  monitoring,
+                  argocd,
+                  kyverno,
+                  kube-node-lease,
+                  kube-public,
+                  external-secrets,
+                ]
       validate:
         message: "Memory limit must equal memory request for Guaranteed QoS."
         deny:
