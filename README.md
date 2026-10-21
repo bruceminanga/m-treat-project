@@ -93,6 +93,8 @@ tflocal apply -auto-approve
 ## 🗺️ Roadmap & Next Steps
 
 Current deployment is **Phase 1 (Single Server Setup)**. Planned future enhancements include:
-- [ ] Add an Application Load Balancer (ALB) to distribute incoming traffic.
-- [ ] Add an Auto Scaling Group (ASG) to handle traffic spikes.
-- [ ] Migrate the local PostgreSQL database to Amazon RDS inside the private subnets.
+- [ ] Integrate **AWS Secrets Manager** to manage Django `SECRET_KEY` and PostgreSQL credentials.
+- [ ] Add **Amazon SES** to send local mock patient registration and verification emails.
+- [ ] Add **Amazon SQS** with Celery for background processing of medical media uploads.
+- [ ] Implement an **AWS Lambda** S3-trigger to auto-process and resize uploaded patient documents.
+- [ ] Export application access and audit logs to **Amazon CloudWatch Logs**.
