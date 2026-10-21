@@ -90,11 +90,19 @@ tflocal apply -auto-approve
 └── requirements.txt  # Python backend dependencies
 ```
 
-## 🗺️ Roadmap & Next Steps
+## 🗺️ Cloud Infrastructure Modules & Roadmap
 
-Current deployment is **Phase 1 (Single Server Setup)**. Planned future enhancements include:
-- [ ] Integrate **AWS Secrets Manager** to manage Django `SECRET_KEY` and PostgreSQL credentials.
-- [ ] Add **Amazon SES** to send local mock patient registration and verification emails.
-- [ ] Add **Amazon SQS** with Celery for background processing of medical media uploads.
-- [ ] Implement an **AWS Lambda** S3-trigger to auto-process and resize uploaded patient documents.
-- [ ] Export application access and audit logs to **Amazon CloudWatch Logs**.
+### Phase 1: Core Infrastructure (Completed)
+- ✅ **`modules/vpc` (Networking):** Architected a dual-AZ network topology (`10.0.0.0/16`) separating public traffic via an Internet Gateway from private workloads routed outbound through an AWS NAT Gateway and Elastic IP.
+- ✅ **`modules/ec2` (Compute & Hosting):** Configured and launched the Django web application host (`dev-fullstack-server`), locking down inbound network access using dedicated security groups restricted to HTTP and HTTPS traffic.
+- ✅ **`modules/iam` (Access & Identity):** Implemented least-privilege access control by binding an IAM instance profile and role (`django-server-dev-s3-role`) to the server, allowing credential-free authentication with S3.
+- ✅ **`modules/s3` (Media Storage):** Provisioned a hardened object storage bucket (`my-app-media-storage-dev`) configured with AES-256 server-side encryption, public access blocks, and CORS policies to store patient medical records securely.
+
+---
+
+### Phase 2: Planned Enhancements (Upcoming LocalStack Modules)
+- [ ] **`modules/secrets_manager` (Security):** Store and retrieve Django `SECRET_KEY`, database credentials, and API tokens securely without hardcoding.
+- [ ] **`modules/ses` (Communications):** Set up local transactional email identities to test patient account verification and appointment confirmations.
+- [ ] **`modules/sqs` (Asynchronous Queues):** Provision message queues and Dead-Letter Queues (DLQ) paired with Celery for background processing of heavy medical files.
+- [ ] **`modules/lambda` (Serverless Compute):** Deploy an S3-triggered event function to automatically resize, optimize, and validate uploaded patient documents.
+- [ ] **`modules/cloudwatch` (Observability):** Centralize Django application logs, patient audit trails, and metric alarms into CloudWatch Log Groups.
