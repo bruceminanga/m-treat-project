@@ -94,9 +94,8 @@ tflocal apply -auto-approve
 
 ### Phase 1: Core Infrastructure (Completed)
 - ✅ **`modules/vpc` (Networking):** Architected a dual-AZ network topology (`10.0.0.0/16`) separating public traffic via an Internet Gateway from private workloads routed outbound through an AWS NAT Gateway and Elastic IP.
-- ✅ **`modules/ec2` (Compute & Hosting):** Configured and launched the Django web application host (`dev-fullstack-server`), locking down inbound network access using dedicated security groups restricted to HTTP and HTTPS traffic.
-- ✅ **`modules/iam` (Access & Identity):** Implemented least-privilege access control by binding an IAM instance profile and role (`django-server-dev-s3-role`) to the server, allowing credential-free authentication with S3.
-- ✅ **`modules/s3` (Media Storage):** Provisioned a hardened object storage bucket (`my-app-media-storage-dev`) configured with AES-256 server-side encryption, public access blocks, and CORS policies to store patient medical records securely.
+- ✅ **`modules/ec2-app-server` (Compute, Security & IAM):** Configured and launched the Django host (`dev-fullstack-server`) with dedicated HTTP/HTTPS security group firewalls and an attached IAM instance profile/role (`django-server-dev-s3-role`) allowing secure, credential-less S3 access.
+- ✅ **`modules/s3-secure-bucket` (Media Storage):** Provisioned a hardened object storage bucket (`my-app-media-storage-dev`) configured with AES-256 server-side encryption, public access blocks, and CORS policies to store patient medical records securely.
 
 ---
 
