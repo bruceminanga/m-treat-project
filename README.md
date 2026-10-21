@@ -63,55 +63,13 @@ flowchart TB
 To provision the infrastructure locally without incurring AWS charges:
 
 1. Ensure Docker and LocalStack are running:
-```bash
-localstack start -d
-```
+
 
 2. Navigate to the terraform directory and run:
 ```bash
-cd terraform
+cd terraform/environments/dev
 tflocal init
 tflocal apply -auto-approve
-```
-
----
-
-## 🛠️ Local Development Setup
-
-### Prerequisites
-- Python 3.9+
-- Node.js 14+
-- PostgreSQL
-- LocalStack & Docker (for cloud infrastructure)
-
-### Backend Setup
-1. Create and activate a virtual environment:
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
-2. Install dependencies:
-```bash
-pip install -r requirements.txt
-```
-
-3. Configure your database:
-- Create a PostgreSQL database
-- Update `.env` with your database credentials and S3 configurations
-
-4. Run migrations and start the server:
-```bash
-python manage.py migrate
-python manage.py runserver
-```
-
-### Frontend Setup
-1. Install dependencies and start development server:
-```bash
-cd frontend
-npm install
-npm start
 ```
 
 ---
